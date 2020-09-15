@@ -17,3 +17,7 @@ func feather111() {
 func feather222() {
 	// xxxxxxxxxxxx
 }
+
+func feather33() {
+	// xxxx
+}
