@@ -31,3 +31,7 @@ func main() {
 	fmt.Println(cap(s))
 
 }
+
+func feather1() {
+
+}
