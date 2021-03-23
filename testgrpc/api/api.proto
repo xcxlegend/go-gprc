@@ -1,0 +1,25 @@
+syntax = "proto3";
+package pb;
+
+service Demo {
+  rpc Get(GetValRequest) returns (GetValReply){}
+  rpc Put(PutValRequest) returns (PutValReply){}
+}
+
+message GetValRequest{
+  string key = 1;
+}
+
+message GetValReply{
+  string key = 1;
+  string val = 2;
+}
+
+message PutValRequest{
+  string key = 1;
+  string val = 2;
+}
+
+message PutValReply{
+  bool ok = 1;
+}
