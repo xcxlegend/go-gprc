@@ -2,8 +2,9 @@ syntax = "proto3";
 package pb;
 
 service Demo {
-  rpc Get(GetValRequest) returns (GetValReply){}
-  rpc Put(PutValRequest) returns (PutValReply){}
+  rpc Get(GetValRequest) returns (GetValReply);
+  rpc Put(PutValRequest) returns (PutValReply);
+  rpc Stream(stream Msg) returns (stream Msg);
 }
 
 message GetValRequest{
@@ -22,4 +23,8 @@ message PutValRequest{
 
 message PutValReply{
   bool ok = 1;
+}
+
+message Msg {
+  string msg = 1;
 }

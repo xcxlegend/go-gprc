@@ -2,8 +2,11 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"grpcdemo/pkg/pb"
+	"io"
 	"sync"
+	"time"
 )
 
 var vals = sync.Map{}
@@ -24,4 +27,35 @@ func (ds *DemoServer) Put(ctx context.Context, req *pb.PutValRequest) (*pb.PutVa
 	return &pb.PutValReply{
 		Ok: true,
 	}, nil
+}
+
+func (ds *DemoServer) Stream(stream pb.Demo_StreamServer) error {
+	ctx, done := context.WithCancel(context.Background())
+	go func() {
+		defer func() {
+			done()
+		}()
+		for {
+			data, err := stream.Recv()
+			if err == io.EOF {
+				return
+			}
+			if err != nil {
+				return
+			}
+			fmt.Println(data.Msg)
+		}
+	}()
+	t := time.Tick(time.Second)
+LOOP:
+	for {
+		select {
+		case <-t:
+			stream.Send(&pb.Msg{Msg: "server message"})
+		case <-ctx.Done():
+			break LOOP
+		}
+	}
+	fmt.Println("client close")
+	return nil
 }
