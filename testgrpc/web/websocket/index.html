@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Websocket Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div>
+            <input v-model="content" />
+            <button type="button" @click="send">Send</button>
+            <div><textarea>{{ messages }}</textarea></div>
+        </div>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            content: "",
+            messages: "",
+            ws: null,
+        },
+        methods: {
+            send: function() {
+                console.log("send")
+                this.wsSend()
+            },
+            handleRecv:function(data) {
+                console.log(data)
+                this.messages += data + "\r\n"
+            },
+            wsOpen: function () {
+                var that = this
+                var ws = new WebSocket("ws://localhost:9999/ws")
+                // 这个地方特别重要，websocket默认是Uint8array
+                // ws.binaryType = 'arraybuffer';
+
+                ws.onopen = function () {
+                    console.info("ws open")
+                }
+
+                ws.onmessage = function (evt) {
+                    console.info(evt)
+                    console.info("Received message:"+evt.data)
+                    that.handleRecv(evt.data)
+                }
+
+                ws.onclose  = function () {
+                    console.info("ws close")
+                }
+                this.ws = ws
+            },
+            wsSend: function() {
+                if(this.ws == null) {
+                    console.info("连接尚未打开")
+                }
+                console.log("send msg:", this.content)
+                if (this.content != "") {
+                    // 发送消息同样很简单，我们不需要关心格式
+                    this.ws.send(this.content)
+                }
+            }
+        },
+        mounted(){
+            this.wsOpen();
+        }
+    })
+</script>
+</html>
